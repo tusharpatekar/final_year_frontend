@@ -49,7 +49,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     console.log('API URL:', API_URL);
     try {
-      const response = await axios.post(`${API_URL}/login`, { email, password });
+      const response = await axios.post(
+        `${API_URL}/login`,
+        { email, password },
+        {
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true
+        }
+      );
       
       if (response.data.message === 'Login successful') {
         const userData: User = {
@@ -79,7 +86,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     
     try {
-      const response = await axios.post(`${API_URL}/signup`, { email, password });
+      const response = await axios.post(`${API_URL}/signup`, { email, password }, {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true
+      });
       
       if (response.data.message === 'Signup successful') {
         const userData: User = {
@@ -109,7 +119,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     
     try {
-      const response = await axios.post(`${API_URL}/google-login`, { credential });
+      const response = await axios.post(`${API_URL}/google-login`, { credential }, {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true
+      });
       
       if (response.data.message === 'Login successful') {
         const userData: User = {
