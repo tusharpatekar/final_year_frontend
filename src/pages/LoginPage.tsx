@@ -55,9 +55,11 @@ const LoginPage = () => {
     setError(null);
     
     try {
+      console.log(await login(email, password));
       await login(email, password);
       navigate('/');
     } catch (err) {
+      console.error('Login error:', err);
       setError('Login failed. Please check your credentials and try again.');
     }
   };

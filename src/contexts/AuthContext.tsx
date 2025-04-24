@@ -29,6 +29,9 @@ export const useAuth = () => {
   return context;
 };
 
+// Use VITE_API_URL for Vite, with fallback to default URL
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,20 +47,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
-    
+    console.log('API URL:', API_URL);
     try {
-      const response = await axios.post('http://127.0.0.1:5000/login', { email, password });
+      const response = await axios.post(`${API_URL}/login`, { email, password });
       
-      if (response.data.message === "Login successful") {
-        // Create a user object with the email since that's what we have
+      if (response.data.message === 'Login successful') {
         const userData: User = {
-          id: email, // Using email as ID since we don't get one from the API
-          email: email
+          id: email,
+          email: email,
         };
-        
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
-        return; // Success case
+        return;
       }
       
       throw new Error('Invalid response format');
@@ -78,14 +79,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     
     try {
-      const response = await axios.post('http://127.0.0.1:5000/signup', { email, password });
+      const response = await axios.post(`${API_URL}/signup`, { email, password });
       
-      if (response.data.message === "Signup successful") {
+      if (response.data.message === 'Signup successful') {
         const userData: User = {
           id: email,
-          email: email
+          email: email,
         };
-        
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
         return;
@@ -109,15 +109,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     
     try {
-      const response = await axios.post('http://127.0.0.1:5000/google-login', { credential });
+      const response = await axios.post(`${API_URL}/google-login`, { credential });
       
-      if (response.data.message === "Login successful") {
-        // For Google login, we'll use the credential as the ID
+      if (response.data.message === 'Login successful') {
         const userData: User = {
           id: credential,
-          email: credential // Using credential as email until we get proper user data
+          email: credential,
         };
-        
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
         return;
@@ -149,7 +147,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     googleLogin,
     logout,
     isLoading,
-    error
+    error,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
