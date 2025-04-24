@@ -30,7 +30,7 @@ export const useAuth = () => {
 };
 
 // Use VITE_API_URL for Vite, with fallback to default URL
-const API_URL = import.meta.env.VITE_API_URL || 'albackend-bwguepd9d7gfaqfa.centralindia-01.azurewebsites.net';
+const API_URL = import.meta.env.VITE_API_URL || 'https://albackend-bwguepd9d7gfaqfa.centralindia-01.azurewebsites.net';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
