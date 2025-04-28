@@ -51,11 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await axios.post(
         `${API_URL}/login`,
-        { email, password },
-        {
-          headers: { 'Content-Type': 'application/json' },
-          withCredentials: true
-        }
+        { email, password }
       );
       
       if (response.data.message === 'Login successful') {
@@ -86,10 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     
     try {
-      const response = await axios.post(`${API_URL}/signup`, { email, password }, {
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true
-      });
+      const response = await axios.post(`${API_URL}/signup`, { email, password });
       
       if (response.data.message === 'Signup successful') {
         const userData: User = {
