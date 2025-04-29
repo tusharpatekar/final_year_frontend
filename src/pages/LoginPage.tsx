@@ -1,49 +1,49 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useGoogleLogin } from '@react-oauth/google';
-import { Leaf } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useGoogleLogin } from "@react-oauth/google";
+import { Leaf } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const { login, googleLogin, isAuthenticated, isLoading } = useAuth();
   const { translate, currentLanguage } = useLanguage();
   const navigate = useNavigate();
-  
+
   const [translatedTexts, setTranslatedTexts] = useState({
-    login: 'Login',
-    email: 'Email',
-    password: 'Password',
-    loginButton: 'Login',
-    googleButton: 'Sign in with Google',
-    noAccount: 'Don\'t have an account?',
-    signup: 'Sign up'
+    login: "Login",
+    email: "Email",
+    password: "Password",
+    loginButton: "Login",
+    googleButton: "Sign in with Google",
+    noAccount: "Don't have an account?",
+    signup: "Sign up",
   });
 
   useEffect(() => {
     // Redirect if already authenticated
     if (isAuthenticated) {
-      navigate('/');
+      navigate("/");
     }
 
     // Translate text based on current language
     const translateTexts = async () => {
       try {
         const translations = {
-          login: await translate('Login'),
-          email: await translate('Email'),
-          password: await translate('Password'),
-          loginButton: await translate('Login'),
-          googleButton: await translate('Sign in with Google'),
-          noAccount: await translate('Don\'t have an account?'),
-          signup: await translate('Sign up')
+          login: await translate("Login"),
+          email: await translate("Email"),
+          password: await translate("Password"),
+          loginButton: await translate("Login"),
+          googleButton: await translate("Sign in with Google"),
+          noAccount: await translate("Don't have an account?"),
+          signup: await translate("Sign up"),
         };
         setTranslatedTexts(translations);
       } catch (error) {
-        console.error('Translation error:', error);
+        console.error("Translation error:", error);
       }
     };
 
@@ -53,53 +53,86 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    
+
     try {
       console.log(await login(email, password));
       await login(email, password);
-      navigate('/');
+      navigate("/");
     } catch (err) {
-      console.error('Login error:', err);
-      setError('Login failed. Please check your credentials and try again.');
+      console.error("Login error:", err);
+      setError("Login failed. Please check your credentials and try again.");
     }
   };
 
   const handleGoogleLogin = useGoogleLogin({
-    onSuccess: async (response) => {
+    flow: "auth-code",
+    onSuccess: async (codeResponse) => {
       try {
-        await googleLogin(response.access_token);
-        navigate('/');
+        const tokenEndpoint = "https://oauth2.googleapis.com/token";
+  
+        const response = await fetch(tokenEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({
+            code: codeResponse.code,
+            client_id: "763127770724-isjj3oae0bug2vk42ueo8090h4je9jpa.apps.googleusercontent.com",
+            client_secret: "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", // ⚠️ Risky for frontend!
+            redirect_uri: "https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net",   // Must match OAuth client setup
+            grant_type: "authorization_code",
+          }),
+        });
+  
+        const tokenData = await response.json();
+        console.log("Token exchange result:", tokenData);
+  
+        // Send ID token or access token to backend
+        await googleLogin(tokenData.id_token); // OR access_token based on backend needs
+  
+        navigate("/");
       } catch (err) {
-        setError('Google login failed. Please try again.');
+        console.error("Google login failed:", err);
+        setError("Google login failed. Please try again.");
       }
     },
     onError: () => {
-      setError('Google login failed. Please try again.');
-    }
+      setError("Google login failed. Please try again.");
+    },
   });
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cover bg-center" 
-         style={{ backgroundImage: 'url(https://images.pexels.com/photos/440731/pexels-photo-440731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1)' }}>
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center"
+      style={{
+        backgroundImage:
+          "url(https://images.pexels.com/photos/440731/pexels-photo-440731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1)",
+      }}
+    >
       <div className="absolute inset-0 bg-black opacity-40"></div>
-      
+
       <div className="relative z-10 bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
         <div className="text-center mb-8">
           <div className="flex justify-center">
             <Leaf className="h-12 w-12 text-green-600" />
           </div>
-          <h1 className="text-3xl font-bold text-green-800 mt-2">{translatedTexts.login}</h1>
+          <h1 className="text-3xl font-bold text-green-800 mt-2">
+            {translatedTexts.login}
+          </h1>
         </div>
-        
+
         {error && (
           <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
             {error}
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               {translatedTexts.email}
             </label>
             <input
@@ -111,9 +144,12 @@ const LoginPage = () => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
             />
           </div>
-          
+
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               {translatedTexts.password}
             </label>
             <input
@@ -125,20 +161,36 @@ const LoginPage = () => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
             />
           </div>
-          
+
           <div>
             <button
               type="submit"
               disabled={isLoading}
               className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors ${
-                isLoading ? 'opacity-70 cursor-not-allowed' : ''
+                isLoading ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
               {isLoading ? (
                 <span className="flex items-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   {translatedTexts.loginButton}...
                 </span>
@@ -148,7 +200,7 @@ const LoginPage = () => {
             </button>
           </div>
         </form>
-        
+
         <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -160,7 +212,7 @@ const LoginPage = () => {
               </span>
             </div>
           </div>
-          
+
           <div className="mt-6">
             <button
               onClick={() => handleGoogleLogin()}
@@ -188,10 +240,13 @@ const LoginPage = () => {
             </button>
           </div>
         </div>
-        
+
         <div className="mt-6 text-center text-sm text-gray-600">
           <span>{translatedTexts.noAccount} </span>
-          <Link to="/signup" className="font-medium text-green-600 hover:text-green-500">
+          <Link
+            to="/signup"
+            className="font-medium text-green-600 hover:text-green-500"
+          >
             {translatedTexts.signup}
           </Link>
         </div>

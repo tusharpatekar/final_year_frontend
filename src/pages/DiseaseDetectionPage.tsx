@@ -1,14 +1,16 @@
-import { useState, useCallback, useEffect } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { Upload, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react';
-import axios from 'axios';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useState, useCallback, useEffect } from "react";
+import { useDropzone } from "react-dropzone";
+import { Upload, AlertCircle, Loader2, CheckCircle2 } from "lucide-react";
+import axios from "axios";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { useLanguage } from "../contexts/LanguageContext";
 
 type DetectionResult = {
-  disease: string;
-  confidence: number;
-  treatment: string;
+  result: string;
 };
+
+
 
 const DiseaseDetectionPage = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -19,49 +21,47 @@ const DiseaseDetectionPage = () => {
   const { translate, currentLanguage } = useLanguage();
 
   const [translatedTexts, setTranslatedTexts] = useState({
-    title: 'Plant Disease Detection',
-    subtitle: 'Upload a clear image of your plant to detect diseases',
-    dropzoneText: 'Drag & drop an image here, or click to select',
-    uploadButton: 'Analyze Image',
-    loadingText: 'Analyzing your image...',
-    errorTitle: 'Error',
-    tryAgain: 'Try Again',
-    resultTitle: 'Detection Result',
-    diseaseLabel: 'Disease:',
-    confidenceLabel: 'Confidence:',
-    treatmentLabel: 'Recommended Treatment:',
-    uploadNew: 'Upload New Image'
+    title: "Plant Disease Detection",
+    subtitle: "Upload a clear image of your plant to detect diseases",
+    dropzoneText: "Drag & drop an image here, or click to select",
+    uploadButton: "Analyze Image",
+    loadingText: "Analyzing your image...",
+    errorTitle: "Error",
+    tryAgain: "Try Again",
+    resultTitle: "Detection Result",
+    uploadNew: "Upload New Image",
   });
 
-  const [translatedResult, setTranslatedResult] = useState<DetectionResult | null>(null);
+  const [translatedResult, setTranslatedResult] =
+    useState<DetectionResult | null>(null);
 
   useEffect(() => {
     const translateTexts = async () => {
       try {
         const translations = {
-          title: await translate('Plant Disease Detection'),
-          subtitle: await translate('Upload a clear image of your plant to detect diseases'),
-          dropzoneText: await translate('Drag & drop an image here, or click to select'),
-          uploadButton: await translate('Analyze Image'),
-          loadingText: await translate('Analyzing your image...'),
-          errorTitle: await translate('Error'),
-          tryAgain: await translate('Try Again'),
-          resultTitle: await translate('Detection Result'),
-          diseaseLabel: await translate('Disease:'),
-          confidenceLabel: await translate('Confidence:'),
-          treatmentLabel: await translate('Recommended Treatment:'),
-          uploadNew: await translate('Upload New Image')
+          title: await translate("Plant Disease Detection"),
+          subtitle: await translate(
+            "Upload a clear image of your plant to detect diseases"
+          ),
+          dropzoneText: await translate(
+            "Drag & drop an image here, or click to select"
+          ),
+          uploadButton: await translate("Analyze Image"),
+          loadingText: await translate("Analyzing your image..."),
+          errorTitle: await translate("Error"),
+          tryAgain: await translate("Try Again"),
+          resultTitle: await translate("Detection Result"),
+          uploadNew: await translate("Upload New Image"),
         };
         setTranslatedTexts(translations);
       } catch (error) {
-        console.error('Translation error:', error);
+        console.error("Translation error:", error);
       }
     };
 
     translateTexts();
   }, [translate, currentLanguage]);
 
-  // Translate detection results when they change or language changes
   useEffect(() => {
     const translateResult = async () => {
       if (!result) {
@@ -70,19 +70,13 @@ const DiseaseDetectionPage = () => {
       }
 
       try {
-        const [translatedDisease, translatedTreatment] = await Promise.all([
-          translate(result.disease),
-          translate(result.treatment)
-        ]);
-
+        const translatedText = await translate(result.result);
         setTranslatedResult({
-          disease: translatedDisease,
-          confidence: result.confidence,
-          treatment: translatedTreatment
+          result: translatedText,
         });
       } catch (error) {
-        console.error('Error translating results:', error);
-        setTranslatedResult(result); // Fallback to original text
+        console.error("Error translating results:", error);
+        setTranslatedResult(result);
       }
     };
 
@@ -105,68 +99,33 @@ const DiseaseDetectionPage = () => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.jpeg', '.jpg', '.png']
+      "image/*": [".jpeg", ".jpg", ".png"],
     },
-    multiple: false
+    multiple: false,
   });
-
-  // Parse Gemini API response into DetectionResult
-  const parseGeminiResponse = (text: string): DetectionResult => {
-    // Example response:
-    // "Crop: Soybean\n\nDisease: Bean pod mottle virus (BPMV)\n\nManagement:\n* Use resistant varieties if available.\n* ..."
-    const lines = text.split('\n');
-    let disease = 'Unknown';
-    let treatment = 'No treatment suggestions available';
-    let confidence = 80; // Default confidence if not provided
-    let managementStarted = false;
-    const managementLines: string[] = [];
-
-    for (const line of lines) {
-      if (line.match(/^Disease:/i)) {
-        disease = line.replace(/^Disease:/i, '').trim();
-      } else if (line.match(/^Management:/i)) {
-        managementStarted = true;
-        continue; // Skip the "Management:" line itself
-      } else if (managementStarted && line.trim()) {
-        managementLines.push(line.trim());
-      } else if (line.match(/^Confidence:/i)) {
-        const confStr = line.replace(/^Confidence:/i, '').replace('%', '').trim();
-        confidence = parseFloat(confStr) || 80;
-      }
-    }
-
-    if (managementLines.length > 0) {
-      treatment = managementLines.join('\n'); // Join bulleted list with newlines
-    }
-
-    return { disease, confidence, treatment };
-  };
 
   const handleUpload = async () => {
     if (!selectedImage) return;
-
     setIsUploading(true);
     setError(null);
 
     const formData = new FormData();
-    formData.append('file', selectedImage);
+    formData.append("file", selectedImage);
 
     try {
-      const response = await axios.post('https://farmingbackend-hsfwf3c9ash4adew.centralindia-01.azurewebsites.net/plantdisease', formData, {
-        headers: {
-          'Content-Type':'multipart/form-data'
+      const response = await axios.post(
+        "https://farmingbackend-hsfwf3c9ash4adew.centralindia-01.azurewebsites.net/plantdisease",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
         }
-      });
-
-      // Log raw response for debugging
-      console.log('Raw response:', response.data.result);
-
-      // Parse the response.result string into DetectionResult
-      const parsedResult = parseGeminiResponse(response.data.result);
-      setResult(parsedResult);
-    } catch (err: any) {
-      console.error('Error uploading image:', err);
-      setError(await translate(err.response?.data?.error || 'Failed to analyze the image. Please try again.'));
+      );
+      setResult(response.data);
+    } catch (err) {
+      console.error("Error uploading image:", err);
+      setError(
+        await translate("Failed to analyze the image. Please try again.")
+      );
     } finally {
       setIsUploading(false);
     }
@@ -182,16 +141,22 @@ const DiseaseDetectionPage = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold text-green-800 mb-2 text-center">{translatedTexts.title}</h1>
-      <p className="text-gray-600 mb-8 text-center">{translatedTexts.subtitle}</p>
+      <h1 className="text-3xl font-bold text-green-800 mb-2 text-center">
+        {translatedTexts.title}
+      </h1>
+      <p className="text-gray-600 mb-8 text-center">
+        {translatedTexts.subtitle}
+      </p>
 
       <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-        {!translatedResult && !isUploading && (
+        {!result && !isUploading && (
           <>
             <div
               {...getRootProps()}
               className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-                isDragActive ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-green-400'
+                isDragActive
+                  ? "border-green-500 bg-green-50"
+                  : "border-gray-300 hover:border-green-400"
               }`}
             >
               <input {...getInputProps()} />
@@ -228,7 +193,9 @@ const DiseaseDetectionPage = () => {
         {error && (
           <div className="bg-red-50 p-6 rounded-lg text-center">
             <AlertCircle className="h-12 w-12 mx-auto text-red-500 mb-4" />
-            <h3 className="text-xl font-semibold text-red-700 mb-2">{translatedTexts.errorTitle}</h3>
+            <h3 className="text-xl font-semibold text-red-700 mb-2">
+              {translatedTexts.errorTitle}
+            </h3>
             <p className="text-red-600 mb-4">{error}</p>
             <button
               onClick={resetStates}
@@ -241,9 +208,9 @@ const DiseaseDetectionPage = () => {
 
         {translatedResult && (
           <div className="bg-green-50 p-6 rounded-lg">
-            <div className="flex flex-col md:flex-row items-center md:items-start">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               {imagePreview && (
-                <div className="md:w-1/3 mb-6 md:mb-0 md:mr-6">
+                <div className="md:w-1/3">
                   <img
                     src={imagePreview}
                     alt="Plant"
@@ -255,30 +222,43 @@ const DiseaseDetectionPage = () => {
               <div className="md:w-2/3">
                 <div className="flex items-center mb-4">
                   <CheckCircle2 className="h-8 w-8 text-green-600 mr-2" />
-                  <h3 className="text-2xl font-semibold text-green-800">{translatedTexts.resultTitle}</h3>
+                  <h3 className="text-2xl font-semibold text-green-800">
+                    {translatedTexts.resultTitle}
+                  </h3>
                 </div>
 
-                <div className="mb-4 p-4 bg-white rounded-lg shadow-sm">
-                  <div className="mb-3">
-                    <span className="font-medium text-gray-700">{translatedTexts.diseaseLabel}</span>
-                    <div className="text-lg">{translatedResult.disease}</div>
-                  </div>
-
-                  <div className="mb-3">
-                    <span className="font-medium text-gray-700">{translatedTexts.confidenceLabel}</span>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-                      <div
-                        className="bg-green-600 h-2.5 rounded-full"
-                        style={{ width: `${translatedResult.confidence}%` }}
-                      ></div>
-                    </div>
-                    <div className="text-sm text-gray-600">{translatedResult.confidence}%</div>
-                  </div>
-
-                  <div>
-                    <span className="font-medium text-gray-700">{translatedTexts.treatmentLabel}</span>
-                    <p className="text-gray-800 whitespace-pre-line">{translatedResult.treatment}</p>
-                  </div>
+                <div className="mb-4 p-4 bg-white rounded-lg shadow-sm prose prose-green max-w-none">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      h1: ({ node, ...props }) => (
+                        <h1 className="text-2xl font-bold mb-4" {...props} />
+                      ),
+                      h2: ({ node, ...props }) => (
+                        <h2 className="text-xl font-bold mb-3" {...props} />
+                      ),
+                      h3: ({ node, ...props }) => (
+                        <h3 className="text-lg font-bold mb-2" {...props} />
+                      ),
+                      p: ({ node, ...props }) => (
+                        <p className="mb-4" {...props} />
+                      ),
+                      ul: ({ node, ...props }) => (
+                        <ul className="list-disc pl-6 mb-4" {...props} />
+                      ),
+                      li: ({ node, ...props }) => (
+                        <li className="mb-2" {...props} />
+                      ),
+                      strong: ({ node, ...props }) => (
+                        <strong
+                          className="font-bold text-green-800"
+                          {...props}
+                        />
+                      ),
+                    }}
+                  >
+                    {translatedResult.result}
+                  </ReactMarkdown>
                 </div>
 
                 <button

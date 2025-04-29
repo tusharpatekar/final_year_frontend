@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 import axios from 'axios';
 
 type User = {
@@ -28,7 +28,8 @@ export const useAuth = () => {
   }
   return context;
 };
-
+    // backend url = https://farmingbackend-hsfwf3c9ash4adew.centralindia-01.azurewebsites.net/plantdisease
+    // local url = http://localhost:5000
 // Use VITE_API_URL for Vite, with fallback to default URL
 let API_URL = "https://farmingbackend-hsfwf3c9ash4adew.centralindia-01.azurewebsites.net";
 
@@ -39,37 +40,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   
 
   // Load Google API script and initialize Google Sign-In
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.onload = () => {
-      window.google.accounts.id.initialize({
-        client_id: '763127770724-isjj3oae0bug2vk42ueo8090h4je9jpa.apps.googleusercontent.com',
-        callback: handleCredentialResponse,
-      });
-    };
-    document.body.appendChild(script);
+//   useEffect(() => {
+//     /* global google */
+//     google.accounts.id.initialize({
+//       client_id:
+//         '763127770724-isjj3oae0bug2vk42ueo8090h4je9jpa.apps.googleusercontent.com', // Your Google Client ID
+//       callback: handleCredentialResponse,
+//     });
 
-    // Load saved user from localStorage
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+//   }, []);
+  
 
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
-  // Handle Google Sign-In response
-  const handleCredentialResponse = async (response: { credential: string }) => {
-    try {
-      await googleLogin(response.credential);
-    } catch (err) {
-      console.error('Google Sign-In failed:', err);
-    }
-  };
+//   // Handle Google Sign-In response
+//   const handleCredentialResponse = async (response: { credential: string }) => {
+//     console.log('Google Sign-In response:', response.credential);
+//     try {
+//       await googleLogin(response.credential);
+//       // Optionally, perform other tasks like UI updates, state changes
+//       // console.log('Google Sign-In successful, user data:', userData);
+//       // Handle popup window closing after backend success
+//       setTimeout(() => {
+//         window.close();  // Delay window closing if necessary
+//       }, 1000);
+//     } catch (err) {
+//       console.error('Google Sign-In failed:', err);
+//     }
+//  };
+ 
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
@@ -139,10 +136,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     
     try {
-      const response = await axios.post(`${API_URL}/google-login`, { credential }, {
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true
-      });
+      const response = await axios.post(`${API_URL}/google-login`,{ token:credential });
       
       if (response.data.message === 'Google Login successful') {
         const userData: User = {
