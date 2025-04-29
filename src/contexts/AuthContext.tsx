@@ -31,8 +31,7 @@ export const useAuth = () => {
 
 // Use VITE_API_URL for Vite, with fallback to default URL
  let API_URL = import.meta.env.VITE_API_URL || 'https://farmingbackend-hsfwf3c9ash4adew.centralindia-01.azurewebsites.net';
-// API_URL = 'http://127.0.0.1:5000';
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
