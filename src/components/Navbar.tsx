@@ -1,14 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Leaf, Menu, X, Globe, LogOut } from 'lucide-react';
+import { Leaf, Menu, X, Globe, LogOut, Sun, Moon } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const { logout, user } = useAuth();
   const { currentLanguage, setLanguage, translate } = useLanguage();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -31,7 +33,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-green-600 text-white shadow-md">
+    <nav className="bg-white dark:bg-dark-primary shadow-md">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
@@ -79,6 +81,19 @@ const Navbar = () => {
               )}
             </div>
             
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-secondary transition-colors"
+              aria-label="Toggle theme"
+            >
+              {isDark ? (
+                <Moon className="w-5 h-5 text-gray-700" />
+              ) : (
+                <Sun className="w-5 h-5 text-yellow-500" />
+              )}
+            </button>
+            
             {/* Logout Button */}
             <button 
               onClick={handleLogout}
@@ -90,7 +105,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Items */}
-          <div className="flex items-center space-x-4 md:hidden">
+          <div className="md:hidden flex items-center space-x-4">
             {/* Language Selector for Mobile */}
             <div className="relative">
               <button 
@@ -120,6 +135,19 @@ const Navbar = () => {
                 </div>
               )}
             </div>
+
+            {/* Theme Toggle for Mobile */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-secondary transition-colors"
+              aria-label="Toggle theme"
+            >
+              {isDark ? (
+                <Moon className="w-5 h-5 text-gray-700" />
+              ) : (
+                <Sun className="w-5 h-5 text-yellow-500" />
+              )}
+            </button>
 
             {/* Mobile menu button */}
             <button onClick={toggleMenu}>

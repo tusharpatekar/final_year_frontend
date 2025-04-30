@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Leaf, Menu, X, Globe } from "lucide-react";
+import { Leaf, Menu, X, Globe, Sun, Moon } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useTheme } from '../contexts/ThemeContext';
 
 const PublicHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const { currentLanguage, setLanguage, translate } = useLanguage();
+  const { isDark, toggleTheme } = useTheme();
   const location = useLocation();
 
   const [translatedTexts, setTranslatedTexts] = useState({
@@ -111,6 +113,19 @@ const PublicHeader = () => {
               )}
             </div>
 
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-secondary transition-colors"
+              aria-label="Toggle theme"
+            >
+              {isDark ? (
+                <Moon className="w-5 h-5 text-gray-700" />
+              ) : (
+                <Sun className="w-5 h-5 text-yellow-500" />
+              )}
+            </button>
+
             <Link
               to="/login"
               className="bg-white text-green-600 px-4 py-2 rounded-md hover:bg-green-50 transition-colors"
@@ -156,6 +171,19 @@ const PublicHeader = () => {
                 </div>
               )}
             </div>
+
+            {/* Theme Toggle for Mobile */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-secondary transition-colors"
+              aria-label="Toggle theme"
+            >
+              {isDark ? (
+                <Moon className="w-5 h-5 text-gray-700" />
+              ) : (
+                <Sun className="w-5 h-5 text-yellow-500" />
+              )}
+            </button>
 
             {/* Mobile menu button */}
             <button onClick={toggleMenu}>

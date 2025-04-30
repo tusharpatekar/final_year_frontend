@@ -1,7 +1,8 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import PublicLayout from './components/PublicLayout';
 import PublicHeader from './components/PublicHeader';
 import Layout from './components/Layout';
@@ -27,84 +28,88 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => {
   return (
-    <AuthProvider>
-      <LanguageProvider>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={
-            <PublicRoute>
-              <PublicLayout>
-                <PublicHomePage />
-              </PublicLayout>
-            </PublicRoute>
-          } />
-          <Route path="/about" element={
-            <PublicRoute>
-              <PublicLayout>
-                <AboutUsPage />
-              </PublicLayout>
-            </PublicRoute>
-          } />
-          <Route path="/login" element={
-            <PublicRoute>
-              <div className="min-h-screen flex flex-col">
-                <PublicHeader />
-                <main className="flex-grow">
-                  <LoginPage />
-                </main>
-              </div>
-            </PublicRoute>
-          } />
-          <Route path="/signup" element={
-            <PublicRoute>
-              <div className="min-h-screen flex flex-col">
-                <PublicHeader />
-                <main className="flex-grow">
-                  <SignupPage />
-                </main>
-              </div>
-            </PublicRoute>
-          } />
+    <Router>
+      <ThemeProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={
+                <PublicRoute>
+                  <PublicLayout>
+                    <PublicHomePage />
+                  </PublicLayout>
+                </PublicRoute>
+              } />
+              <Route path="/about" element={
+                <PublicRoute>
+                  <PublicLayout>
+                    <AboutUsPage />
+                  </PublicLayout>
+                </PublicRoute>
+              } />
+              <Route path="/login" element={
+                <PublicRoute>
+                  <div className="min-h-screen flex flex-col">
+                    <PublicHeader />
+                    <main className="flex-grow">
+                      <LoginPage />
+                    </main>
+                  </div>
+                </PublicRoute>
+              } />
+              <Route path="/signup" element={
+                <PublicRoute>
+                  <div className="min-h-screen flex flex-col">
+                    <PublicHeader />
+                    <main className="flex-grow">
+                      <SignupPage />
+                    </main>
+                  </div>
+                </PublicRoute>
+              } />
 
-          {/* Private Routes */}
-          <Route path="/home" element={
-            <PrivateRoute>
-              <Layout>
-                <HomePage />
-              </Layout>
-            </PrivateRoute>
-          } />
-          <Route path="/detect" element={
-            <PrivateRoute>
-              <Layout>
-                <DiseaseDetectionPage />
-              </Layout>
-            </PrivateRoute>
-          } />
-          <Route path="/features/accurate-detection" element={
-            <PrivateRoute>
-              <Layout>
-                <AccurateDetection />
-              </Layout>
-            </PrivateRoute>
-          } />
-          <Route path="/features/fast-results" element={
-            <PrivateRoute>
-              <Layout>
-                <FastResults />
-              </Layout>
-            </PrivateRoute>
-          } />
-          <Route path="/features/treatment-recommendations" element={
-            <PrivateRoute>
-              <Layout>
-                <TreatmentRecommendations />
-              </Layout>
-            </PrivateRoute>
-          } />
-        </Routes>
-      </LanguageProvider>
-    </AuthProvider>
+              {/* Private Routes */}
+              <Route path="/home" element={
+                <PrivateRoute>
+                  <Layout>
+                    <HomePage />
+                  </Layout>
+                </PrivateRoute>
+              } />
+              <Route path="/detect" element={
+                <PrivateRoute>
+                  <Layout>
+                    <DiseaseDetectionPage />
+                  </Layout>
+                </PrivateRoute>
+              } />
+              <Route path="/features/accurate-detection" element={
+                <PrivateRoute>
+                  <Layout>
+                    <AccurateDetection />
+                  </Layout>
+                </PrivateRoute>
+              } />
+              <Route path="/features/fast-results" element={
+                <PrivateRoute>
+                  <Layout>
+                    <FastResults />
+                  </Layout>
+                </PrivateRoute>
+              } />
+              <Route path="/features/treatment-recommendations" element={
+                <PrivateRoute>
+                  <Layout>
+                    <TreatmentRecommendations />
+                  </Layout>
+                </PrivateRoute>
+              } />
+            </Routes>
+          </LanguageProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </Router>
   );
 };
 
