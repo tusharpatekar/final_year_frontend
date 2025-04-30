@@ -31,7 +31,7 @@ export const useAuth = () => {
     // backend url = https://farmingbackend-hsfwf3c9ash4adew.centralindia-01.azurewebsites.net/plantdisease
     // local url = http://localhost:5000
 // Use VITE_API_URL for Vite, with fallback to default URL
-let API_URL = "https://farmingbackend-hsfwf3c9ash4adew.centralindia-01.azurewebsites.net";
+let API_URL = "http://localhost:5000";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
