@@ -89,10 +89,43 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Mobile menu button */}
-          <button className="md:hidden" onClick={toggleMenu}>
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {/* Mobile Menu Items */}
+          <div className="flex items-center space-x-4 md:hidden">
+            {/* Language Selector for Mobile */}
+            <div className="relative">
+              <button 
+                onClick={toggleLanguageMenu}
+                className="flex items-center space-x-1 hover:text-green-200 transition-colors"
+              >
+                <Globe size={18} />
+                <span className="text-sm">{languages.find(lang => lang.code === currentLanguage)?.name}</span>
+              </button>
+              
+              {isLanguageMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                  {languages.map((language) => (
+                    <button
+                      key={language.code}
+                      onClick={() => {
+                        setLanguage(language.code as 'en' | 'hi' | 'mr');
+                        setIsLanguageMenuOpen(false);
+                      }}
+                      className={`block w-full text-left px-4 py-2 text-sm ${
+                        currentLanguage === language.code ? 'bg-green-100 text-green-800' : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      {language.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Mobile menu button */}
+            <button onClick={toggleMenu}>
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
@@ -104,27 +137,6 @@ const Navbar = () => {
             <Link to="/detect" className="block py-2 hover:text-green-200 transition-colors">
               Detect Disease
             </Link>
-            
-            {/* Language Options */}
-            <div className="py-2">
-              <div className="font-medium mb-2 flex items-center">
-                <Globe size={18} className="mr-2" />
-                <span>Language</span>
-              </div>
-              <div className="pl-6 space-y-2">
-                {languages.map((language) => (
-                  <button
-                    key={language.code}
-                    onClick={() => setLanguage(language.code as 'en' | 'hi' | 'mr')}
-                    className={`block w-full text-left ${
-                      currentLanguage === language.code ? 'font-medium text-green-200' : 'hover:text-green-200'
-                    }`}
-                  >
-                    {language.name}
-                  </button>
-                ))}
-              </div>
-            </div>
             
             <button 
               onClick={handleLogout}
