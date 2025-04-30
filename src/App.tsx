@@ -1,57 +1,111 @@
-import { useEffect, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
-import ProtectedRoute from './components/ProtectedRoute';
+import PublicLayout from './components/PublicLayout';
+import PublicHeader from './components/PublicHeader';
+import Layout from './components/Layout';
+import PublicHomePage from './pages/PublicHomePage';
+import AboutUsPage from './pages/AboutUsPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import HomePage from './pages/HomePage';
 import DiseaseDetectionPage from './pages/DiseaseDetectionPage';
-import Layout from './components/Layout';
+import AccurateDetection from './pages/features/AccurateDetection';
+import FastResults from './pages/features/FastResults';
+import TreatmentRecommendations from './pages/features/TreatmentRecommendations';
 
-function App() {
-  const [isLoading, setIsLoading] = useState(true);
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
+};
 
-  useEffect(() => {
-    // Simulate initial loading
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, []);
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated } = useAuth();
+  return !isAuthenticated ? <>{children}</> : <Navigate to="/home" />;
+};
 
-  if (isLoading) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-white">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500"></div>
-      </div>
-    );
-  }
-
+const App = () => {
   return (
-    <LanguageProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <LanguageProvider>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route element={<Layout />}>
-            <Route path="/" element={
-              <ProtectedRoute>
+          {/* Public Routes */}
+          <Route path="/" element={
+            <PublicRoute>
+              <PublicLayout>
+                <PublicHomePage />
+              </PublicLayout>
+            </PublicRoute>
+          } />
+          <Route path="/about" element={
+            <PublicRoute>
+              <PublicLayout>
+                <AboutUsPage />
+              </PublicLayout>
+            </PublicRoute>
+          } />
+          <Route path="/login" element={
+            <PublicRoute>
+              <div className="min-h-screen flex flex-col">
+                <PublicHeader />
+                <main className="flex-grow">
+                  <LoginPage />
+                </main>
+              </div>
+            </PublicRoute>
+          } />
+          <Route path="/signup" element={
+            <PublicRoute>
+              <div className="min-h-screen flex flex-col">
+                <PublicHeader />
+                <main className="flex-grow">
+                  <SignupPage />
+                </main>
+              </div>
+            </PublicRoute>
+          } />
+
+          {/* Private Routes */}
+          <Route path="/home" element={
+            <PrivateRoute>
+              <Layout>
                 <HomePage />
-              </ProtectedRoute>
-            } />
-            <Route path="/detect" element={
-              <ProtectedRoute>
+              </Layout>
+            </PrivateRoute>
+          } />
+          <Route path="/detect" element={
+            <PrivateRoute>
+              <Layout>
                 <DiseaseDetectionPage />
-              </ProtectedRoute>
-            } />
-          </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
+              </Layout>
+            </PrivateRoute>
+          } />
+          <Route path="/features/accurate-detection" element={
+            <PrivateRoute>
+              <Layout>
+                <AccurateDetection />
+              </Layout>
+            </PrivateRoute>
+          } />
+          <Route path="/features/fast-results" element={
+            <PrivateRoute>
+              <Layout>
+                <FastResults />
+              </Layout>
+            </PrivateRoute>
+          } />
+          <Route path="/features/treatment-recommendations" element={
+            <PrivateRoute>
+              <Layout>
+                <TreatmentRecommendations />
+              </Layout>
+            </PrivateRoute>
+          } />
         </Routes>
-      </AuthProvider>
-    </LanguageProvider>
+      </LanguageProvider>
+    </AuthProvider>
   );
-}
+};
 
 export default App;
