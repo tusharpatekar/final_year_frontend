@@ -84,18 +84,42 @@ const SignupPage = () => {
   };
 
   const handleGoogleLogin = useGoogleLogin({
-    onSuccess: async (response) => {
+    flow: "auth-code",
+    onSuccess: async (codeResponse) => {
       try {
-        await googleLogin(response.access_token);
-        navigate('/');
+        const tokenEndpoint = "https://oauth2.googleapis.com/token";
+  
+        const response = await fetch(tokenEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({
+            code: codeResponse.code,
+            client_id: "763127770724-isjj3oae0bug2vk42ueo8090h4je9jpa.apps.googleusercontent.com",
+            client_secret: "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", // ⚠️ Risky for frontend!
+            redirect_uri: "https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net",   // Must match OAuth client setup
+            grant_type: "authorization_code",
+          }),
+        });
+  
+        const tokenData = await response.json();
+        console.log("Token exchange result:", tokenData);
+  
+        // Send ID token or access token to backend
+        await googleLogin(tokenData.id_token); // OR access_token based on backend needs
+  
+        navigate("/");
       } catch (err) {
-        setError('Google login failed. Please try again.');
+        console.error("Google login failed:", err);
+        setError("Google login failed. Please try again.");
       }
     },
     onError: () => {
-      setError('Google login failed. Please try again.');
-    }
+      setError("Google login failed. Please try again.");
+    },
   });
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-cover bg-center" 
