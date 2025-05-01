@@ -14,7 +14,7 @@ const Layout = ({ children }: LayoutProps) => {
       </main>
       <footer className="bg-green-800 text-white py-4">
         <div className="container mx-auto px-4 text-center">
-          <p>© Designed and developed by TechSquad 2025.</p>
+          <p>© Designed and Developed by TechSquad 2025.</p>
         </div>
       </footer>
     </div>
