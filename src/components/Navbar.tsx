@@ -48,6 +48,9 @@ const Navbar = () => {
             <Link to="/detect" className="hover:text-green-200 transition-colors">
               Detect Disease
             </Link>
+            <Link to="/about" className="hover:text-green-200 transition-colors">
+              About Us
+            </Link>
             
             {/* Language Selector */}
             <div className="relative">
