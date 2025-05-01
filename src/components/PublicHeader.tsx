@@ -11,7 +11,7 @@ const PublicHeader = () => {
 
   const [translatedTexts, setTranslatedTexts] = useState({
     home: "Home",
-    about: "About",
+    about: "About Us",
     login: "Login",
     signup: "Sign Up",
   });
@@ -21,7 +21,7 @@ const PublicHeader = () => {
       try {
         const translations = {
           home: await translate("Home"),
-          about: await translate("About"),
+          about: await translate("About Us"),
           login: await translate("Login"),
           signup: await translate("Sign Up"),
         };
