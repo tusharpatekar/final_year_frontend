@@ -1,14 +1,14 @@
 import { ReactNode } from 'react';
-import Navbar from './Navbar';
+import PublicHeader from './PublicHeader';
 
-type LayoutProps = {
+type PublicLayoutProps = {
   children: ReactNode;
 };
 
-const Layout = ({ children }: LayoutProps) => {
+const PublicLayout = ({ children }: PublicLayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Navbar />
+      <PublicHeader />
       <main className="flex-grow container mx-auto px-4 py-8">
         {children}
       </main>
@@ -21,4 +21,4 @@ const Layout = ({ children }: LayoutProps) => {
   );
 };
 
-export default Layout;
+export default PublicLayout; 

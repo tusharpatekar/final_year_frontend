@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Leaf } from "lucide-react";
@@ -12,6 +12,7 @@ const LoginPage = () => {
   const { login, googleLogin, isAuthenticated, isLoading } = useAuth();
   const { translate, currentLanguage } = useLanguage();
   const navigate = useNavigate();
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const [translatedTexts, setTranslatedTexts] = useState({
     login: "Login",
@@ -48,6 +49,18 @@ const LoginPage = () => {
     };
 
     translateTexts();
+
+    // Add click outside handler
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        navigate('/');
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [isAuthenticated, navigate, translate, currentLanguage]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -111,7 +124,7 @@ const LoginPage = () => {
     >
       <div className="absolute inset-0 bg-black opacity-40"></div>
 
-      <div className="relative z-10 bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <div ref={modalRef} className="relative z-10 bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
         <div className="text-center mb-8">
           <div className="flex justify-center">
             <Leaf className="h-12 w-12 text-green-600" />

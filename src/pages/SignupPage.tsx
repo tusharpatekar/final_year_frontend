@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import { Leaf } from 'lucide-react';
@@ -13,6 +13,7 @@ const SignupPage = () => {
   const { signup, googleLogin, isAuthenticated, isLoading } = useAuth();
   const { translate, currentLanguage } = useLanguage();
   const navigate = useNavigate();
+  const modalRef = useRef<HTMLDivElement>(null);
   
   const [translatedTexts, setTranslatedTexts] = useState({
     signup: 'Sign Up',
@@ -51,6 +52,18 @@ const SignupPage = () => {
     };
 
     translateTexts();
+
+    // Add click outside handler
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        navigate('/');
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [isAuthenticated, navigate, translate, currentLanguage]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -89,7 +102,7 @@ const SignupPage = () => {
          style={{ backgroundImage: 'url(https://images.pexels.com/photos/1072824/pexels-photo-1072824.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1)' }}>
       <div className="absolute inset-0 bg-black opacity-40"></div>
       
-      <div className="relative z-10 bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <div ref={modalRef} className="relative z-10 bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
         <div className="text-center mb-8">
           <div className="flex justify-center">
             <Leaf className="h-12 w-12 text-green-600" />
@@ -103,7 +116,7 @@ const SignupPage = () => {
           </div>
         )}
         
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               {translatedTexts.email}
@@ -209,7 +222,7 @@ const SignupPage = () => {
           </div>
         </div>
         
-        <div className="mt-6 text-center text-sm text-gray-600">
+        <div className="mt-6 text-center text-sm">
           <span>{translatedTexts.haveAccount} </span>
           <Link to="/login" className="font-medium text-green-600 hover:text-green-500">
             {translatedTexts.login}

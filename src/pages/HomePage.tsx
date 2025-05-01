@@ -83,35 +83,41 @@ const HomePage = () => {
         <h2 className="text-3xl font-bold text-green-800 mb-8 text-center">{translatedTexts.featuresTitle}</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100 hover:shadow-lg hover:border-green-100 transition-all duration-300">
-            <div className="bg-green-100 rounded-full p-3 inline-block mb-4">
-              <Plant className="h-8 w-8 text-green-600" />
+          <Link to="/features/accurate-detection" className="block">
+            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100 hover:shadow-lg hover:border-green-100 transition-all duration-300">
+              <div className="bg-green-100 rounded-full p-3 inline-block mb-4">
+                <Plant className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-green-800 mb-2">{translatedTexts.feature1Title}</h3>
+              <p className="text-gray-600">{translatedTexts.feature1Desc}</p>
             </div>
-            <h3 className="text-xl font-semibold text-green-800 mb-2">{translatedTexts.feature1Title}</h3>
-            <p className="text-gray-600">{translatedTexts.feature1Desc}</p>
-          </div>
+          </Link>
           
-          <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100 hover:shadow-lg hover:border-green-100 transition-all duration-300">
-            <div className="bg-green-100 rounded-full p-3 inline-block mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
+          <Link to="/features/fast-results" className="block">
+            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100 hover:shadow-lg hover:border-green-100 transition-all duration-300">
+              <div className="bg-green-100 rounded-full p-3 inline-block mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-green-800 mb-2">{translatedTexts.feature2Title}</h3>
+              <p className="text-gray-600">{translatedTexts.feature2Desc}</p>
             </div>
-            <h3 className="text-xl font-semibold text-green-800 mb-2">{translatedTexts.feature2Title}</h3>
-            <p className="text-gray-600">{translatedTexts.feature2Desc}</p>
-          </div>
+          </Link>
           
-          <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100 hover:shadow-lg hover:border-green-100 transition-all duration-300">
-            <div className="bg-green-100 rounded-full p-3 inline-block mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
-                <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
-              </svg>
+          <Link to="/features/treatment-recommendations" className="block">
+            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100 hover:shadow-lg hover:border-green-100 transition-all duration-300">
+              <div className="bg-green-100 rounded-full p-3 inline-block mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                  <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-green-800 mb-2">{translatedTexts.feature3Title}</h3>
+              <p className="text-gray-600">{translatedTexts.feature3Desc}</p>
             </div>
-            <h3 className="text-xl font-semibold text-green-800 mb-2">{translatedTexts.feature3Title}</h3>
-            <p className="text-gray-600">{translatedTexts.feature3Desc}</p>
-          </div>
+          </Link>
         </div>
       </section>
 

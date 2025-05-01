@@ -1,20 +1,38 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { Leaf, Menu, X, Globe, LogOut } from 'lucide-react';
-import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Leaf, Menu, X, Globe } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext";
 
-const Navbar = () => {
+const PublicHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
-  const { logout, user } = useAuth();
   const { currentLanguage, setLanguage, translate } = useLanguage();
-  const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const [translatedTexts, setTranslatedTexts] = useState({
+    home: "Home",
+    about: "About",
+    login: "Login",
+    signup: "Sign Up",
+  });
+
+  useEffect(() => {
+    const translateTexts = async () => {
+      try {
+        const translations = {
+          home: await translate("Home"),
+          about: await translate("About"),
+          login: await translate("Login"),
+          signup: await translate("Sign Up"),
+        };
+        setTranslatedTexts(translations);
+      } catch (error) {
+        console.error("Translation error:", error);
+      }
+    };
+
+    translateTexts();
+  }, [translate]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -30,6 +48,10 @@ const Navbar = () => {
     { code: 'mr', name: 'मराठी' }
   ];
 
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
+
   return (
     <nav className="bg-green-600 text-white shadow-md">
       <div className="container mx-auto px-4">
@@ -42,11 +64,21 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="hover:text-green-200 transition-colors">
-              Home
+            <Link 
+              to="/" 
+              className={`hover:text-green-200 transition-colors ${
+                isActive("/") ? "text-green-200" : ""
+              }`}
+            >
+              {translatedTexts.home}
             </Link>
-            <Link to="/detect" className="hover:text-green-200 transition-colors">
-              Detect Disease
+            <Link 
+              to="/about" 
+              className={`hover:text-green-200 transition-colors ${
+                isActive("/about") ? "text-green-200" : ""
+              }`}
+            >
+              {translatedTexts.about}
             </Link>
             
             {/* Language Selector */}
@@ -78,19 +110,23 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-            
-            {/* Logout Button */}
-            <button 
-              onClick={handleLogout}
-              className="flex items-center space-x-1 hover:text-green-200 transition-colors"
+
+            <Link
+              to="/login"
+              className="bg-white text-green-600 px-4 py-2 rounded-md hover:bg-green-50 transition-colors"
             >
-              <LogOut size={18} />
-              <span>Logout</span>
-            </button>
+              {translatedTexts.login}
+            </Link>
+            <Link
+              to="/signup"
+              className="bg-white text-green-600 px-4 py-2 rounded-md hover:bg-green-50 transition-colors"
+            >
+              {translatedTexts.signup}
+            </Link>
           </div>
 
           {/* Mobile Menu Items */}
-          <div className="flex items-center space-x-4 md:hidden">
+          <div className="md:hidden flex items-center space-x-4">
             {/* Language Selector for Mobile */}
             <div className="relative">
               <button 
@@ -131,20 +167,34 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden pb-4 space-y-4">
-            <Link to="/" className="block py-2 hover:text-green-200 transition-colors">
-              Home
-            </Link>
-            <Link to="/detect" className="block py-2 hover:text-green-200 transition-colors">
-              Detect Disease
-            </Link>
-            
-            <button 
-              onClick={handleLogout}
-              className="flex items-center space-x-2 py-2 hover:text-green-200 transition-colors"
+            <Link 
+              to="/" 
+              className={`block py-2 hover:text-green-200 transition-colors ${
+                isActive("/") ? "text-green-200" : ""
+              }`}
             >
-              <LogOut size={18} />
-              <span>Logout</span>
-            </button>
+              {translatedTexts.home}
+            </Link>
+            <Link 
+              to="/about" 
+              className={`block py-2 hover:text-green-200 transition-colors ${
+                isActive("/about") ? "text-green-200" : ""
+              }`}
+            >
+              {translatedTexts.about}
+            </Link>
+            <Link
+              to="/login"
+              className="block w-full text-center bg-white text-green-600 px-4 py-2 rounded-md hover:bg-green-50 transition-colors"
+            >
+              {translatedTexts.login}
+            </Link>
+            <Link
+              to="/signup"
+              className="block w-full text-center bg-white text-green-600 px-4 py-2 rounded-md hover:bg-green-50 transition-colors"
+            >
+              {translatedTexts.signup}
+            </Link>
           </div>
         )}
       </div>
@@ -152,4 +202,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default PublicHeader; 
