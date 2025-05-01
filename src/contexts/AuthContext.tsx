@@ -28,10 +28,10 @@ export const useAuth = () => {
   }
   return context;
 };
-    // backend url = https://farmingbackend-hsfwf3c9ash4adew.centralindia-01.azurewebsites.net/plantdisease
+    // backend url = https://farmingbackend-hsfwf3c9ash4adew.centralindia-01.azurewebsites.net
     // local url = http://localhost:5000
 // Use VITE_API_URL for Vite, with fallback to default URL
-let API_URL = "http://localhost:5000";
+let API_URL = "https://farmingbackend-hsfwf3c9ash4adew.centralindia-01.azurewebsites.net";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);

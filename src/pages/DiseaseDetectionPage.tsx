@@ -114,7 +114,7 @@ const DiseaseDetectionPage = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/plantdisease",
+        "https://farmingbackend-hsfwf3c9ash4adew.centralindia-01.azurewebsites.net/plantdisease",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
