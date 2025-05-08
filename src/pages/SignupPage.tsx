@@ -98,7 +98,7 @@ const SignupPage = () => {
             code: codeResponse.code,
             client_id: "763127770724-isjj3oae0bug2vk42ueo8090h4je9jpa.apps.googleusercontent.com",
             client_secret: "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", // ⚠️ Risky for frontend!
-            redirect_uri: "https://salmon-pebble-0a7fc0b1e.6.azurestaticapps.net",   // Must match OAuth client setup
+            redirect_uri: "https://lemon-moss-0137e5e00.6.azurestaticapps.net",   // Must match OAuth client setup
             grant_type: "authorization_code",
           }),
         });
