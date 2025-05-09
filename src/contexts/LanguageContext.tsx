@@ -83,7 +83,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     setIsTranslating(true);
     
     try {
-      const subscriptionKey = 'DE2DLHkrlEHK7Is6wQCUlWpNT6a3AXLr18AQLDeipaWwV4NzryPWJQQJ99BDACGhslBXJ3w3AAAbACOGh9Fl';
+      const subscriptionKey = 'AV0mb5WmK3jZd7Rf9r87aD4LadFcBH0ebYUTRlb6UqSb8v1baqWKJQQJ99BEACGhslBXJ3w3AAAbACOGWB4d';
       const endpoint = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0';
       
       const response = await axios.post(
